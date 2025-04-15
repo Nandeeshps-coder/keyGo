@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Bookmarks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav a:hover {
+            background-color: #0b7dda;
+        }
+        .bookmarks-list {
+            margin-top: 20px;
+        }
+        .bookmark-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .bookmark-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/">Home</a>
+            <a href="/add_page">Add Bookmark</a>
+        </div>
+        
+        <h1>Search Bookmarks</h1>
+        
+        <div class="section">
+            <form action="/search" method="GET">
+                <div class="form-group">
+                    <label for="search">Enter Custom Name:</label>
+                    <input type="text" id="search" name="search" required>
+                </div>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        
+        <div class="section bookmarks-list">
+            <h2>Your Bookmarks</h2>
+            <div id="bookmarks">
+                <!-- This section will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Fetch and display all bookmarks
+        window.onload = function() {
+            fetch('/list_bookmarks')
+            .then(response => response.json())
+            .then(data => {
+                const bookmarksDiv = document.getElementById('bookmarks');
+                if (Object.keys(data).length === 0) {
+                    bookmarksDiv.innerHTML = '<p>No bookmarks found.</p>';
+                } else {
+                    let html = '';
+                    for (const [name, url] of Object.entries(data)) {
+                        html += `
+                            <div class="bookmark-item">
+                                <strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a>
+                            </div>
+                        `;
+                    }
+                    bookmarksDiv.innerHTML = html;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching bookmarks:', error);
+                document.getElementById('bookmarks').innerHTML = '<p>Error loading bookmarks.</p>';
+            });
+        }
+    </script>
+</body>
+</html>
