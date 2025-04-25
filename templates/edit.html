@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeyGo - Add Bookmark</title>
+    <title>KeyGo - Edit Shortcut</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -198,42 +198,64 @@
             margin-top: 5px;
         }
         
-        .card {
+        .bookmark-preview {
+            background-color: rgba(67, 97, 238, 0.05);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 20px;
-            margin-top: 40px;
-            background-color: rgba(67, 97, 238, 0.05);
+            margin-bottom: 30px;
+            position: relative;
         }
         
-        .card-title {
+        .preview-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--container-bg);
+            padding: 0 10px;
             color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .preview-item {
             margin-bottom: 15px;
-            font-size: 1.1rem;
+        }
+        
+        .preview-title {
+            font-weight: 500;
+            color: var(--dark-text);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-content {
+            color: var(--medium-text);
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .actions {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 15px;
+            margin-top: 20px;
         }
         
-        .tips {
-            list-style-type: none;
-        }
-        
-        .tips li {
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        
-        .tips li:last-child {
-            border-bottom: none;
-        }
-        
-        .tips i {
+        .cancel-button {
+            background-color: transparent;
             color: var(--primary-color);
-            margin-top: 4px;
+            border: 1px solid var(--primary-color);
+            flex: 1;
+        }
+        
+        .cancel-button:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .save-button {
+            background-color: var(--primary-color);
+            flex: 2;
         }
 
         /* Theme toggle styles */
@@ -318,6 +340,10 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .actions {
+                flex-direction: column;
+            }
 
             .theme-toggle {
                 top: 10px;
@@ -356,46 +382,55 @@
         {% endwith %}
         
         <div class="app-title">KeyGo</div>
-        <h1>Add New Shortcut</h1>
+        <h1>Edit Shortcut</h1>
+        
+        <div class="bookmark-preview">
+            <div class="preview-label">Current Shortcut</div>
+            <div class="preview-item">
+                <div class="preview-title"><i class="fas fa-tag"></i> Name</div>
+                <div class="preview-content">{{ name }}</div>
+            </div>
+            <div class="preview-item">
+                <div class="preview-title"><i class="fas fa-link"></i> URL</div>
+                <div class="preview-content">{{ bookmark.url }}</div>
+            </div>
+            {% if bookmark.visits is defined %}
+            <div class="preview-item">
+                <div class="preview-title"><i class="fas fa-eye"></i> Visits</div>
+                <div class="preview-content">{{ bookmark.visits }}</div>
+            </div>
+            {% endif %}
+            {% if bookmark.date_added is defined %}
+            <div class="preview-item">
+                <div class="preview-title"><i class="fas fa-calendar-alt"></i> Date Added</div>
+                <div class="preview-content">{{ bookmark.date_added }}</div>
+            </div>
+            {% endif %}
+        </div>
         
         <div class="section">
-            <form action="/add" method="POST" id="add-form">
+            <form action="/edit/{{ name }}" method="POST" id="edit-form">
                 <div class="form-group">
                     <label for="custom_name"><i class="fas fa-tag"></i> Custom Name:</label>
-                    <input type="text" id="custom_name" name="custom_name" placeholder="Enter a memorable name for this bookmark" required>
-                    <span class="form-hint">This is the name you'll use to access the bookmark (e.g., "google", "youtube")</span>
+                    <input type="text" id="custom_name" name="custom_name" value="{{ name }}" required>
+                    <span class="form-hint">The name you'll use to access this shortcut</span>
                 </div>
                 <div class="form-group">
                     <label for="url"><i class="fas fa-link"></i> URL:</label>
-                    <input type="text" id="url" name="url" placeholder="https://example.com" required>
+                    <input type="text" id="url" name="url" value="{{ bookmark.url }}" required>
                     <span class="form-hint">The complete web address you want to bookmark</span>
                 </div>
                 <div class="form-group">
-                    <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
-                    <textarea id="notes" name="notes" placeholder="Add any helpful notes about this bookmark"></textarea>
+                    <label for="notes"><i class="fas fa-sticky-note"></i> Notes:</label>
+                    <textarea id="notes" name="notes" placeholder="Add any helpful notes about this shortcut">{{ bookmark.notes }}</textarea>
+                    <span class="form-hint">Optional notes to remember why you saved this shortcut</span>
                 </div>
-                <button type="submit"><i class="fas fa-plus-circle"></i> Add Bookmark</button>
+                
+                <div class="actions">
+                    <a href="/shortcuts" class="cancel-button"><i class="fas fa-times"></i> Cancel</a>
+                    <button type="submit" class="save-button"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
             </form>
-        </div>
-        
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-lightbulb"></i> Tips for Creating Shortcuts
-            </div>
-            <ul class="tips">
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Use short, memorable names that are easy to type</div>
-                </li>
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Add http:// or https:// to your URLs (will be added automatically if missing)</div>
-                </li>
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Include helpful notes to remember why you saved this shortcut</div>
-                </li>
-            </ul>
         </div>
     </div>
     
@@ -459,4 +494,4 @@
         });
     </script>
 </body>
-</html>
+</html> 

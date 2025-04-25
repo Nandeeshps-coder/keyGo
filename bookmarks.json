@@ -1,3 +1,8 @@
 {
-    "google": "https://www.google.com",
-    "yt": "http://www.youtube.com"}
+    "netflix": {
+        "url": "http://www.netflix.com",
+        "notes": "",
+        "date_added": "2025-04-25 00:33:26",
+        "visits": 1
+    }
+}

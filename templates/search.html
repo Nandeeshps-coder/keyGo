@@ -1,134 +1,557 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Bookmarks</title>
+    <title>KeyGo - Search Bookmarks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            /* Light theme (default) */
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --light-bg: #f8f9fa;
+            --container-bg: white;
+            --dark-text: #333;
+            --medium-text: #555;
+            --light-text: #777;
+            --border-color: #e5e5e5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        /* Dark theme */
+        html[data-theme='dark'] {
+            --primary-color: #6c7fff;
+            --secondary-color: #8257e6;
+            --success-color: #5cb85c;
+            --danger-color: #ff5252;
+            --light-bg: #121212;
+            --container-bg: #1e1e1e;
+            --dark-text: #f0f0f0;
+            --medium-text: #aaaaaa;
+            --light-text: #888888;
+            --border-color: #333333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+        
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
         }
+        
         h1 {
-            color: #333;
+            color: var(--dark-text);
             text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
         }
+        
+        h2 {
+            color: var(--dark-text);
+            font-size: 1.4rem;
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
         }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            margin-bottom: 8px;
+            color: var(--medium-text);
+            font-weight: 500;
         }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 43px;
+            color: var(--medium-text);
+        }
+        
         input[type="text"] {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
             box-sizing: border-box;
+            transition: var(--transition);
+            font-size: 1rem;
+            background-color: var(--container-bg);
+            color: var(--dark-text);
         }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
         button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
         }
+        
         button:hover {
-            background-color: #45a049;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
+        
         .section {
             margin-bottom: 30px;
         }
+        
         .nav {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
+        
         .nav a {
-            background-color: #2196F3;
-            color: white;
-            padding: 10px 15px;
+            background-color: transparent;
+            color: var(--primary-color);
+            padding: 8px 15px;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid var(--primary-color);
         }
+        
         .nav a:hover {
-            background-color: #0b7dda;
+            background-color: var(--primary-color);
+            color: white;
         }
+        
         .bookmarks-list {
             margin-top: 20px;
         }
-        .bookmark-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        
+        .bookmark-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
         }
-        .bookmark-item:last-child {
-            border-bottom: none;
+        
+        .bookmark-item {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: var(--container-bg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .bookmark-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bookmark-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--dark-text);
+            flex: 1;
+        }
+        
+        .bookmark-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .open-button {
+            background-color: var(--success-color);
+        }
+        
+        .edit-button {
+            background-color: var(--primary-color);
+        }
+        
+        .delete-button {
+            background-color: var(--danger-color);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .flash-messages {
+            margin-bottom: 30px;
+        }
+        
+        .flash-message {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.4s ease;
+        }
+        
+        .flash-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .flash-message.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--medium-text);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border-color);
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* Theme toggle styles */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--medium-text);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffa500;
+        }
+
+        html[data-theme='dark'] .toggle-knob {
+            left: 28px;
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .theme-icon {
+            font-size: 0.8rem;
+        }
+
+        .app-title {
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            font-size: 2rem;
+            text-align: center;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px;
+            }
+            
+            .nav {
+                flex-direction: column;
+            }
+            
+            .nav a {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="theme-toggle">
+        <span class="theme-label">Theme</span>
+        <div class="toggle-switch" id="themeToggle">
+            <div class="toggle-knob">
+                <i class="fas fa-sun theme-icon"></i>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="nav">
-            <a href="/">Home</a>
-            <a href="/add_page">Add Bookmark</a>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/add_page"><i class="fas fa-plus"></i> Add Shortcut</a>
         </div>
         
-        <h1>Search Bookmarks</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="app-title">KeyGo</div>
+        <h1>Search &amp; Manage Shortcuts</h1>
         
         <div class="section">
-            <form action="/search" method="GET">
+            <form action="/search" method="GET" id="search-form">
                 <div class="form-group">
-                    <label for="search">Enter Custom Name:</label>
-                    <input type="text" id="search" name="search" required>
+                    <label for="search"><i class="fas fa-search"></i> Quick Access or Search</label>
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search" name="search" placeholder="Type a shortcut name to access or search..." required>
                 </div>
-                <button type="submit">Search</button>
+                <button type="submit"><i class="fas fa-external-link-alt"></i> Go to Shortcut</button>
             </form>
         </div>
         
         <div class="section bookmarks-list">
-            <h2>Your Bookmarks</h2>
-            <div id="bookmarks">
+            <h2><i class="fas fa-list"></i> Your Shortcuts</h2>
+            <div id="bookmarks" class="bookmark-list">
                 <!-- This section will be populated by JavaScript -->
             </div>
         </div>
     </div>
     
     <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            
+            // Check for saved theme preference or use default
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            
+            // Set the toggle position based on current theme
+            updateToggleIcon();
+            
+            // Toggle theme when switch is clicked
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                updateToggleIcon();
+            });
+            
+            function updateToggleIcon() {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const toggleKnob = document.querySelector('.toggle-knob');
+                const iconElement = toggleKnob.querySelector('i');
+                
+                if (currentTheme === 'dark') {
+                    iconElement.className = 'fas fa-moon theme-icon';
+                } else {
+                    iconElement.className = 'fas fa-sun theme-icon';
+                }
+            }
+        });
+
         // Fetch and display all bookmarks
         window.onload = function() {
+            fetchAndDisplayBookmarks();
+            
+            // Auto-remove flash messages
+            setTimeout(function() {
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(msg => {
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        msg.remove();
+                    }, 400);
+                });
+            }, 5000);
+        };
+        
+        function fetchAndDisplayBookmarks() {
             fetch('/list_bookmarks')
             .then(response => response.json())
             .then(data => {
                 const bookmarksDiv = document.getElementById('bookmarks');
+                
                 if (Object.keys(data).length === 0) {
-                    bookmarksDiv.innerHTML = '<p>No bookmarks found.</p>';
+                    bookmarksDiv.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-link"></i>
+                            <p>No shortcuts found.</p>
+                            <a href="/add_page" class="action-button edit-button">
+                                <i class="fas fa-plus"></i> Add Your First Shortcut
+                            </a>
+                        </div>
+                    `;
                 } else {
                     let html = '';
-                    for (const [name, url] of Object.entries(data)) {
+                    
+                    // Sort bookmarks alphabetically by name
+                    const sortedNames = Object.keys(data).sort();
+                    
+                    for (const name of sortedNames) {
+                        const bookmark = data[name];
+                        
+                        // Handle both old format (string) and new format (object with metadata)
+                        let url;
+                        if (typeof bookmark === 'string') {
+                            url = bookmark;
+                        } else {
+                            url = bookmark.url;
+                        }
+                        
                         html += `
-                            <div class="bookmark-item">
-                                <strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a>
+                            <div class="bookmark-item fade-in">
+                                <div class="bookmark-name">${name}</div>
+                                <div class="bookmark-actions">
+                                    <a href="/search?search=${name}" class="action-button open-button" title="Open Shortcut">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    <a href="/edit_page/${name}" class="action-button edit-button" title="Edit Shortcut">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form style="display: inline;" action="/delete/${name}" method="POST">
+                                        <button type="submit" class="action-button delete-button" title="Delete Shortcut">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         `;
                     }
+                    
                     bookmarksDiv.innerHTML = html;
                 }
             })
             .catch(error => {
                 console.error('Error fetching bookmarks:', error);
-                document.getElementById('bookmarks').innerHTML = '<p>Error loading bookmarks.</p>';
+                document.getElementById('bookmarks').innerHTML = '<p>Error loading shortcuts.</p>';
             });
         }
     </script>

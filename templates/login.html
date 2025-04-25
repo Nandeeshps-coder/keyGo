@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeyGo - Add Bookmark</title>
+    <title>KeyGo - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -62,6 +62,8 @@
             box-shadow: var(--shadow);
             transform: translateY(0);
             transition: var(--transition);
+            max-width: 450px;
+            margin: 40px auto;
         }
         
         .container:hover {
@@ -72,7 +74,7 @@
         h1 {
             color: var(--dark-text);
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             font-size: 1.8rem;
         }
         
@@ -87,7 +89,7 @@
             font-weight: 500;
         }
         
-        input[type="text"], textarea {
+        input[type="text"], input[type="email"], input[type="password"] {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--border-color);
@@ -100,15 +102,10 @@
             color: var(--dark-text);
         }
         
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
             border-color: var(--primary-color);
             outline: none;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-        
-        textarea {
-            height: 120px;
-            resize: vertical;
         }
         
         button {
@@ -132,37 +129,6 @@
             background-color: var(--secondary-color);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        .section {
-            margin-bottom: 30px;
-        }
-        
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .nav a {
-            background-color: transparent;
-            color: var(--primary-color);
-            padding: 8px 15px;
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
-            transition: var(--transition);
-            border: 1px solid var(--primary-color);
-        }
-        
-        .nav a:hover {
-            background-color: var(--primary-color);
-            color: white;
         }
         
         .flash-messages {
@@ -190,50 +156,32 @@
             color: #c62828;
             border-left: 4px solid #f44336;
         }
-        
-        .form-hint {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--light-text);
-            margin-top: 5px;
+
+        .app-title {
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--medium-text);
         }
         
-        .card {
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-top: 40px;
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-        
-        .card-title {
+        .register-link a {
             color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-decoration: none;
+            font-weight: 500;
         }
         
-        .tips {
-            list-style-type: none;
-        }
-        
-        .tips li {
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        
-        .tips li:last-child {
-            border-bottom: none;
-        }
-        
-        .tips i {
-            color: var(--primary-color);
-            margin-top: 4px;
+        .register-link a:hover {
+            text-decoration: underline;
         }
 
         /* Theme toggle styles */
@@ -282,17 +230,6 @@
         .theme-icon {
             font-size: 0.8rem;
         }
-
-        .app-title {
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            font-size: 2rem;
-            text-align: center;
-        }
         
         @keyframes slideDown {
             from {
@@ -307,16 +244,7 @@
         
         @media (max-width: 600px) {
             .container {
-                padding: 25px 20px;
-            }
-            
-            .nav {
-                flex-direction: column;
-            }
-            
-            .nav a {
-                width: 100%;
-                justify-content: center;
+                padding: 30px 20px;
             }
 
             .theme-toggle {
@@ -337,11 +265,6 @@
     </div>
 
     <div class="container">
-        <div class="nav">
-            <a href="/"><i class="fas fa-search"></i> Search</a>
-            <a href="/shortcuts"><i class="fas fa-list"></i> View Shortcuts</a>
-        </div>
-        
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flash-messages">
@@ -356,46 +279,22 @@
         {% endwith %}
         
         <div class="app-title">KeyGo</div>
-        <h1>Add New Shortcut</h1>
+        <h1>Login</h1>
         
-        <div class="section">
-            <form action="/add" method="POST" id="add-form">
-                <div class="form-group">
-                    <label for="custom_name"><i class="fas fa-tag"></i> Custom Name:</label>
-                    <input type="text" id="custom_name" name="custom_name" placeholder="Enter a memorable name for this bookmark" required>
-                    <span class="form-hint">This is the name you'll use to access the bookmark (e.g., "google", "youtube")</span>
-                </div>
-                <div class="form-group">
-                    <label for="url"><i class="fas fa-link"></i> URL:</label>
-                    <input type="text" id="url" name="url" placeholder="https://example.com" required>
-                    <span class="form-hint">The complete web address you want to bookmark</span>
-                </div>
-                <div class="form-group">
-                    <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
-                    <textarea id="notes" name="notes" placeholder="Add any helpful notes about this bookmark"></textarea>
-                </div>
-                <button type="submit"><i class="fas fa-plus-circle"></i> Add Bookmark</button>
-            </form>
-        </div>
-        
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-lightbulb"></i> Tips for Creating Shortcuts
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
-            <ul class="tips">
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Use short, memorable names that are easy to type</div>
-                </li>
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Add http:// or https:// to your URLs (will be added automatically if missing)</div>
-                </li>
-                <li>
-                    <i class="fas fa-check"></i>
-                    <div>Include helpful notes to remember why you saved this shortcut</div>
-                </li>
-            </ul>
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        
+        <div class="register-link">
+            <p>Don't have an account? <a href="/signup">Sign up</a></p>
         </div>
     </div>
     
@@ -435,14 +334,6 @@
                 }
             }
         });
-
-        // Automatic URL scheme detection
-        document.getElementById('url').addEventListener('blur', function() {
-            let urlInput = this.value.trim();
-            if (urlInput && !urlInput.startsWith('http://') && !urlInput.startsWith('https://')) {
-                this.value = 'http://' + urlInput;
-            }
-        });
         
         // Automatically remove flash messages after 5 seconds
         window.addEventListener('load', function() {
@@ -459,4 +350,4 @@
         });
     </script>
 </body>
-</html>
+</html> 

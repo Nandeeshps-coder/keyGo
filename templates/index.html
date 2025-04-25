@@ -1,71 +1,558 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Bookmarker</title>
+    <title>KeyGo - Search Engine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            /* Light theme (default) */
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --light-bg: #f8f9fa;
+            --container-bg: white;
+            --dark-text: #333;
+            --medium-text: #555;
+            --light-text: #777;
+            --border-color: #e5e5e5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        /* Dark theme */
+        html[data-theme='dark'] {
+            --primary-color: #6c7fff;
+            --secondary-color: #8257e6;
+            --success-color: #5cb85c;
+            --danger-color: #ff5252;
+            --light-bg: #121212;
+            --container-bg: #1e1e1e;
+            --dark-text: #f0f0f0;
+            --medium-text: #aaaaaa;
+            --light-text: #888888;
+            --border-color: #333333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+        
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transform: translateY(0);
+            transition: var(--transition);
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        h1 {
+            color: var(--dark-text);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .description {
+            color: var(--medium-text);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
             text-align: center;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
+        
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .button-container {
+        
+        .search-form {
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        .search-form input {
+            width: 100%;
+            padding: 18px 25px 18px 60px;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            background-color: var(--container-bg);
+            color: var(--dark-text);
+        }
+        
+        .search-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--medium-text);
+            font-size: 1.2rem;
+        }
+        
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .search-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .navigation {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+        
+        .nav-button {
+            background-color: transparent;
+            color: var(--primary-color);
+            padding: 12px 25px;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
             text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
         }
-        .button:hover {
-            background-color: #45a049;
+        
+        .nav-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .button.search {
-            background-color: #2196F3;
+        
+        .recent-searches {
+            margin-top: 40px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background-color: rgba(67, 97, 238, 0.05);
+            border: 1px solid var(--border-color);
         }
-        .button.search:hover {
-            background-color: #0b7dda;
+        
+        .recent-title {
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .description {
-            color: #666;
+        
+        .recent-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .recent-item {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 8px 15px;
+            color: var(--medium-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .recent-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .flash-messages {
             margin-bottom: 30px;
+        }
+        
+        .flash-message {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.4s ease;
+        }
+        
+        .flash-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .flash-message.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark-text);
+        }
+        
+        .feature p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+
+        /* Theme toggle styles */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--medium-text);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffa500;
+        }
+
+        html[data-theme='dark'] .toggle-knob {
+            left: 28px;
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .theme-icon {
+            font-size: 0.8rem;
+        }
+
+        .app-title {
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .search-form input {
+                padding: 15px 100px 15px 50px;
+                font-size: 1rem;
+            }
+            
+            .search-icon {
+                left: 20px;
+            }
+            
+            .search-button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .nav-button {
+                width: 100%;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>URL Bookmarker</h1>
-        
-        <p class="description">A simple application to save and access your favorite websites using custom names.</p>
-        
-        <div class="button-container">
-            <a href="/add_page" class="button">Add New Bookmark</a>
-            <a href="/search_page" class="button search">Search Bookmarks</a>
+    <div class="theme-toggle">
+        <span class="theme-label">Theme</span>
+        <div class="toggle-switch" id="themeToggle">
+            <div class="toggle-knob">
+                <i class="fas fa-sun theme-icon"></i>
+            </div>
         </div>
     </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="app-title">KeyGo</div>
+        <h1>Fast Web Navigation</h1>
+        
+        <p class="description">Type a shortcut name to instantly open your favorite websites</p>
+        
+        <div class="search-container">
+            <form action="/search" method="GET" class="search-form">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="search" id="search" placeholder="Enter shortcut name..." autofocus>
+                <button type="submit" class="search-button">Go <i class="fas fa-arrow-right"></i></button>
+            </form>
+            
+            <div class="navigation">
+                {% if current_user.is_authenticated %}
+                <a href="/shortcuts" class="nav-button">
+                    <i class="fas fa-list"></i> View All Shortcuts
+                </a>
+                <a href="/add_page" class="nav-button">
+                    <i class="fas fa-plus"></i> Add New Shortcut
+                </a>
+                <a href="/logout" class="nav-button">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+                {% else %}
+                <a href="/login" class="nav-button">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/signup" class="nav-button">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+                {% endif %}
+            </div>
+            
+            <div class="recent-searches" id="recentSearches" style="display: none;">
+                <h3 class="recent-title"><i class="fas fa-history"></i> Recently Used</h3>
+                <div class="recent-list" id="recentList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast Access</h3>
+                <p>Quickly navigate to your favorite sites using custom names</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-sticky-note"></i>
+                <h3>Notes</h3>
+                <p>Add useful notes to remember why you saved a shortcut</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h3>Visit Tracking</h3>
+                <p>Keep track of how many times you've visited each site</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            
+            // Check for saved theme preference or use default
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            
+            // Set the toggle position based on current theme
+            updateToggleIcon();
+            
+            // Toggle theme when switch is clicked
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                updateToggleIcon();
+            });
+            
+            function updateToggleIcon() {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const toggleKnob = document.querySelector('.toggle-knob');
+                const iconElement = toggleKnob.querySelector('i');
+                
+                if (currentTheme === 'dark') {
+                    iconElement.className = 'fas fa-moon theme-icon';
+                } else {
+                    iconElement.className = 'fas fa-sun theme-icon';
+                }
+            }
+            
+            // Load recent searches from localStorage
+            const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            if (recentSearches.length > 0) {
+                const recentList = document.getElementById('recentList');
+                document.getElementById('recentSearches').style.display = 'block';
+                
+                // Show up to 5 most recent searches
+                recentSearches.slice(0, 5).forEach(search => {
+                    const item = document.createElement('a');
+                    item.href = `/search?search=${encodeURIComponent(search)}`;
+                    item.className = 'recent-item';
+                    item.innerHTML = `<i class="fas fa-history"></i> ${search}`;
+                    recentList.appendChild(item);
+                });
+            }
+            
+            // Track search submissions to save to recent
+            document.querySelector('.search-form').addEventListener('submit', function(e) {
+                const searchTerm = document.getElementById('search').value.trim();
+                if (searchTerm) {
+                    // Load existing recent searches
+                    let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+                    
+                    // Remove if already exists (to avoid duplicates)
+                    recentSearches = recentSearches.filter(term => term !== searchTerm);
+                    
+                    // Add the new search term to the beginning
+                    recentSearches.unshift(searchTerm);
+                    
+                    // Keep only the 10 most recent
+                    recentSearches = recentSearches.slice(0, 10);
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+                }
+            });
+        });
+        
+        // Automatically remove flash messages after 5 seconds
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(msg => {
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        msg.remove();
+                    }, 400);
+                });
+            }, 5000);
+        });
+    </script>
 </body>
 </html>
